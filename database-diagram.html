@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FenReads Database Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #diagram {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .download-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>FenReads - Diagramme de Base de Données</h1>
+    
+    <div id="diagram">
+        <div class="mermaid">
+erDiagram
+    Users ||--o{ ReadingProgress : "has"
+    Users ||--o{ UserPreferences : "has"
+    Users ||--o{ Collections : "owns"
+    Users ||--o{ Bookmarks : "creates"
+    Users ||--o{ KccProfiles : "configures"
+    Users ||--o{ FileOperations : "performs"
+    
+    Works ||--o{ WorkFiles : "contains"
+    Works ||--o{ WorkMetadata : "has"
+    Works ||--o{ WorkTags : "tagged_with"
+    Works ||--o{ ReadingProgress : "tracked_in"
+    Works ||--o{ Bookmarks : "bookmarked_in"
+    Works ||--o{ CollectionItems : "included_in"
+    Works ||--o{ ScrapingJobs : "scraped_by"
+    
+    Collections ||--o{ CollectionItems : "contains"
+    
+    Tags ||--o{ WorkTags : "applied_to"
+    
+    ScrapingSources ||--o{ ScrapingJobs : "triggers"
+    ScrapingJobs ||--o{ ScrapingResults : "produces"
+    
+    WorkFiles ||--o{ Bookmarks : "points_to"
+    
+    FileOperations ||--o{ FileOperationHistory : "tracked_by"
+
+    Users {
+        uuid id PK
+        string username UK
+        string email UK
+        string passwordHash
+        string role
+        boolean isActive
+        timestamp createdAt
+        timestamp lastLoginAt
+    }
+
+    Works {
+        uuid id PK
+        string workType
+        string title
+        string originalTitle
+        jsonb alternativeTitles
+        text synopsis
+        string status
+        date releaseDate
+        string coverPath
+        string author
+        string artist
+        jsonb specificData
+        string sourceType
+        string sourceUrl
+        timestamp lastScrapeDate
+        boolean autoUpdate
+    }
+
+    WorkFiles {
+        uuid id PK
+        uuid workId FK
+        string filePath UK
+        string fileName
+        string fileFormat
+        bigint fileSize
+        string fileHash
+        int volumeNumber
+        decimal chapterNumber
+        string chapterTitle
+        int pageCount
+        boolean isDownloaded
+        string downloadUrl
+    }
+
+    WorkMetadata {
+        uuid id PK
+        uuid workId FK
+        string source
+        string externalId
+        string url
+        jsonb rawData
+        timestamp lastUpdateAt
+    }
+
+    ReadingProgress {
+        uuid id PK
+        uuid userId FK
+        uuid workId FK
+        int currentPage
+        int totalPages
+        decimal currentChapter
+        text lastPosition
+        int lastScrollPosition
+        string status
+        text notes
+        timestamp lastReadDate
+        interval readingTime
+    }
+
+    Collections {
+        uuid id PK
+        uuid userId FK
+        string name
+        text description
+        int sortOrder
+    }
+
+    CollectionItems {
+        uuid id PK
+        uuid collectionId FK
+        uuid workId FK
+        timestamp addedAt
+        int sortOrder
+    }
+
+    Bookmarks {
+        uuid id PK
+        uuid userId FK
+        uuid workId FK
+        uuid workFileId FK
+        string title
+        int pageNumber
+        decimal chapterNumber
+        text position
+        int scrollPosition
+    }
+
+    Tags {
+        uuid id PK
+        string name UK
+        string category
+        string color
+    }
+
+    WorkTags {
+        uuid workId FK
+        uuid tagId FK
+    }
+
+
+
+    ScrapingSources {
+        uuid id PK
+        string name
+        string type
+        string baseUrl
+        boolean isActive
+        int rateLimit
+        int priority
+        jsonb configuration
+    }
+
+    ScrapingJobs {
+        uuid id PK
+        uuid sourceId FK
+        uuid workId FK
+        string jobType
+        string status
+        int priority
+        timestamp scheduledAt
+        timestamp startedAt
+        timestamp completedAt
+        int retryCount
+        text errorMessage
+    }
+
+    ScrapingResults {
+        uuid id PK
+        uuid jobId FK
+        string resultType
+        jsonb resultData
+        timestamp processedAt
+        boolean isProcessed
+    }
+
+    FileOperations {
+        uuid id PK
+        string operationType
+        string sourcePath
+        string destinationPath
+        string status
+        text errorMessage
+        uuid userId FK
+        timestamp completedAt
+    }
+
+    FileOperationHistory {
+        uuid id PK
+        uuid operationId FK
+        jsonb backupData
+    }
+
+    UserPreferences {
+        uuid id PK
+        uuid userId FK
+        string defaultReadingMode
+        string defaultTheme
+        int fontSize
+        decimal lineHeight
+        string language
+        int itemsPerPage
+        string defaultView
+        boolean showNSFW
+        boolean notifyNewChapters
+        string defaultExportDevice
+        int exportQuality
+        boolean removeMargins
+        boolean splitDoublePages
+    }
+
+    KccProfiles {
+        uuid id PK
+        uuid userId FK
+        string name
+        string device
+        int width
+        int height
+        boolean isColor
+        boolean isManga
+        boolean splitDoublePages
+        boolean removeMargins
+        int quality
+        boolean isDefault
+    }
+        </div>
+    </div>
+
+    <button class="download-btn" onclick="downloadSVG()">Télécharger en SVG</button>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                layoutDirection: 'TB',
+                minEntityWidth: 100,
+                minEntityHeight: 75,
+                entityPadding: 15,
+                stroke: '#333',
+                fill: '#fff'
+            }
+        });
+
+        function downloadSVG() {
+            const svg = document.querySelector('.mermaid svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+            const svgUrl = URL.createObjectURL(svgBlob);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = svgUrl;
+            downloadLink.download = 'fenreads-database-diagram.svg';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(svgUrl);
+        }
+    </script>
+</body>
+</html>
