@@ -261,7 +261,170 @@
 - API principale → Base de données pour stocker les résultats
 - Scraper → Retourne les résultats à l'API principale via HTTP
 
-## 3. ORGANISATION DES RÉPERTOIRES
+## 3. PRINCIPES ARCHITECTURAUX ET PATTERNS
+
+### 3.1 Domain-Driven Design (DDD)
+
+#### BaseEntity et héritage
+```csharp
+public abstract class BaseEntity : IAuditableEntity
+{
+    public Guid Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public string? CreatedBy { get; set; }
+    public string? UpdatedBy { get; set; }
+    
+    // Support des événements domaine
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+}
+```
+
+**Justifications :**
+- **Identité uniforme** : Toutes les entités ont un Guid comme identifiant unique
+- **Traçabilité** : Les champs d'audit permettent de suivre qui modifie quoi et quand
+- **Event-driven** : Support natif des événements domaine pour découplage
+- **DRY** : Évite la duplication du code d'infrastructure dans chaque entité
+
+#### IAuditableEntity
+**Objectif :** Séparer la préoccupation d'audit du reste de la logique métier
+
+**Bénéfices :**
+- Permet d'implémenter des intercepteurs EF Core pour mise à jour automatique
+- Facilite les tests unitaires en isolant cette préoccupation
+- Rend le système d'audit optionnel et configurable
+
+#### ValueObject
+```csharp
+public abstract class ValueObject
+{
+    protected abstract IEnumerable<object?> GetEqualityComponents();
+    // Égalité basée sur les valeurs, pas l'identité
+}
+```
+
+**Concept DDD fondamental :**
+- Les Value Objects sont définis par leurs valeurs, pas leur identité
+- Immutables par design
+- Exemples : Email, FilePath, DateRange, Money, Address
+
+**Cas d'usage dans FenReads :**
+- `FilePath` : Encapsule la logique de validation des chemins NAS
+- `ChapterNumber` : Gère les formats complexes (1, 1.5, 1a, etc.)
+- `ReadingPosition` : Position dans un chapitre (page + scroll)
+- `ScrapingConfiguration` : Paramètres de scraping immutables
+
+#### IDomainEvent
+```csharp
+public interface IDomainEvent
+{
+    DateTime OccurredOn { get; }
+}
+```
+
+**Architecture événementielle :**
+- Découple les différents bounded contexts
+- Permet l'implémentation de patterns avancés (Event Sourcing, CQRS)
+- Facilite l'audit et la traçabilité
+
+**Événements domaine planifiés :**
+- `WorkAddedEvent` : Nouveau manga/BD ajouté → déclenche scraping métadonnées
+- `ChapterCompletedEvent` : Chapitre terminé → met à jour les statistiques
+- `FileOperationCompletedEvent` : Opération fichier terminée → met à jour l'index
+- `NewChapterAvailableEvent` : Nouveau chapitre détecté → notification utilisateurs
+- `DuplicateDetectedEvent` : Doublon trouvé → proposition de nettoyage
+
+### 3.2 Clean Architecture
+
+#### Séparation en couches
+```
+┌─────────────────────────────────────────┐
+│           Presentation (API/UI)         │  → Controllers, ViewModels
+├─────────────────────────────────────────┤
+│           Application                    │  → Use Cases, Services, DTOs
+├─────────────────────────────────────────┤
+│           Domain                        │  → Entities, Value Objects, Events
+├─────────────────────────────────────────┤
+│           Infrastructure                │  → EF Core, External APIs, File I/O
+└─────────────────────────────────────────┘
+```
+
+**Règles de dépendance :**
+- Domain ne dépend de rien
+- Application dépend uniquement du Domain
+- Infrastructure dépend de Domain et Application
+- Presentation dépend de toutes les couches
+
+**Bénéfices pour FenReads :**
+- **Testabilité** : Domain et Application testables sans dépendances externes
+- **Flexibilité** : Facile de changer de base de données ou API externe
+- **Maintenabilité** : Logique métier isolée et facile à comprendre
+- **Évolutivité** : Ajout de nouvelles fonctionnalités sans impact sur l'existant
+
+### 3.3 Patterns utilisés
+
+#### Repository Pattern
+- Abstraction de l'accès aux données
+- Facilite les tests avec des repositories en mémoire
+- Permet de changer de système de persistance
+
+#### Unit of Work
+- Gestion des transactions
+- Cohérence des données
+- Optimisation des accès base de données
+
+#### Specification Pattern
+- Requêtes réutilisables et composables
+- Logique de filtrage dans le domaine
+- Exemple : `UnreadChaptersSpecification`, `DuplicateFilesSpecification`
+
+#### Mediator Pattern (via MediatR)
+- Découple les contrôleurs de la logique métier
+- Gestion centralisée des cross-cutting concerns
+- Pipeline behaviors pour validation, logging, etc.
+
+### 3.4 Justifications spécifiques à FenReads
+
+#### Pourquoi cette complexité ?
+
+**1. Gestion de fichiers sur NAS**
+- Les FileOperations génèrent des événements pour traçabilité
+- ValueObjects pour chemins validés et sécurisés
+- Pattern Repository pour abstraction du système de fichiers
+
+**2. Multi-utilisateurs**
+- Audit automatique via IAuditableEntity
+- Événements pour synchronisation temps réel
+- Isolation des contextes utilisateur
+
+**3. Scraping complexe**
+- Événements pour orchestration asynchrone
+- Specifications pour filtrage intelligent
+- Repository pattern pour cache de résultats
+
+**4. Évolution future**
+- Architecture prête pour microservices
+- Support natif pour Event Sourcing si besoin
+- CQRS facilement implémentable
+
+### 3.5 Compromis et simplifications possibles
+
+Pour un MVP ou prototype :
+- Supprimer IDomainEvent si pas de temps réel requis
+- Fusionner Application et Domain pour petits projets
+- Utiliser des DTOs simples au lieu de ValueObjects
+- Repository générique au lieu de repositories spécifiques
+
+Cependant, pour FenReads avec ses besoins de :
+- Gestion de fichiers critiques sur NAS
+- Scraping avec multiples sources
+- Multi-utilisateurs avec synchronisation
+- Évolution vers des fonctionnalités avancées
+
+→ L'architecture proposée est justifiée et évitera la dette technique.
+
+## 4. ORGANISATION DES RÉPERTOIRES
 
 ```
 FenReads/
