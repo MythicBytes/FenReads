@@ -181,10 +181,10 @@
 
 ### 2.1 Stack Technologique
 - **Backend**
-  - .NET 8/9
+  - .NET 9
   - ASP.NET Core Web API
   - Entity Framework Core
-  - PostgreSQL/SQLite
+  - PostgreSQL
   - Redis (cache)
   - Hangfire (jobs)
 
@@ -203,6 +203,20 @@
   - Stockage direct sur NAS (volumes Docker)
   - Scanner de répertoires (analyse et import automatique)
   - Une seule base PostgreSQL partagée
+
+- **Tests**
+  - xUnit (framework de test)
+  - Shouldly (assertions)
+  - NSubstitute (mocks)
+  - Testcontainers (tests d'intégration avec Docker)
+  - Karate (tests fonctionnels API via Docker)
+
+- **CI/CD**
+  - GitHub Actions
+  - Build et tests automatiques sur branches feature/*, bugfix/*, hotfix/*
+  - Tests requis pour validation des Pull Requests
+  - Protection des branches main et develop
+  - Déploiement manuel sur NAS via SSH
 
 ### 2.2 Architecture Logicielle (Simplifiée)
 ```
@@ -335,10 +349,13 @@ FenReads/
 │   │   ├── Helpers/
 │   │   └── Models/
 │   │
-│   └── FenReads.Tests/                  # Tests unitaires et intégration
-│       ├── Unit/
-│       ├── Integration/
-│       └── E2E/
+│   └── tests/                            # Tests unitaires et intégration
+│       ├── FenReads.Domain.Tests/       # Tests unitaires domaine
+│       ├── FenReads.Application.Tests/  # Tests unitaires application
+│       ├── FenReads.Infrastructure.Tests/ # Tests unitaires infrastructure
+│       ├── FenReads.Api.IntegrationTests/ # Tests d'intégration API
+│       ├── FenReads.Infrastructure.IntegrationTests/ # Tests d'intégration infra
+│       └── FenReads.FunctionalTests/    # Tests fonctionnels Karate
 │
 ├── client/                               # Application React
 │   ├── public/
@@ -482,14 +499,55 @@ public class ReadingProgress
 }
 ```
 
-## 5. PLAN DE DÉVELOPPEMENT
+## 5. STRUCTURE ACTUELLE DU PROJET
 
-### Phase 1 - Core (2-3 semaines)
-1. Setup projet et architecture
-2. Modèles de données et migrations
-3. API de base (CRUD manga/utilisateurs)
-4. Authentification JWT
-5. Upload et stockage fichiers
+### Projets créés
+```
+FenReads/
+├── src/
+│   ├── FenReads.Api/                    # API Web ASP.NET Core
+│   ├── FenReads.Domain/                 # Entités et logique domaine
+│   ├── FenReads.Application/            # Services et logique métier
+│   └── FenReads.Infrastructure/         # Accès données (EF Core + PostgreSQL)
+│
+├── tests/
+│   ├── FenReads.Domain.Tests/           # Tests unitaires domaine (xUnit + Shouldly + NSubstitute)
+│   ├── FenReads.Application.Tests/      # Tests unitaires application
+│   ├── FenReads.Infrastructure.Tests/   # Tests unitaires infrastructure
+│   ├── FenReads.Api.IntegrationTests/   # Tests d'intégration API (Testcontainers)
+│   ├── FenReads.Infrastructure.IntegrationTests/ # Tests d'intégration infra
+│   └── FenReads.FunctionalTests.Runner/ # Runner Karate via Testcontainers
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml                       # Pipeline CI GitHub Actions
+│
+└── FenReads.sln                         # Solution .NET
+
+```
+
+### Packages NuGet installés
+- **Infrastructure** : EF Core 9.0, Npgsql.EntityFrameworkCore.PostgreSQL
+- **API** : Swashbuckle.AspNetCore (Swagger)
+- **Tests** : xUnit, Shouldly, NSubstitute, Testcontainers (PostgreSQL, Redis)
+
+### État actuel
+- ✅ Architecture Clean Architecture/DDD mise en place
+- ✅ Projets de tests configurés avec frameworks de test
+- ✅ Pipeline CI/CD GitHub Actions configuré
+- ✅ Support Docker et Testcontainers
+- ✅ Git Flow configuré (main/develop + features)
+- ⏳ Modèles de domaine à créer
+- ⏳ Dockerfiles à configurer
+
+## 6. PLAN DE DÉVELOPPEMENT
+
+### Phase 1 - Core (2-3 semaines) ✅ En cours
+1. ✅ Setup projet et architecture
+2. ⏳ Modèles de données et migrations
+3. ⏳ API de base (CRUD manga/utilisateurs)
+4. ⏳ Authentification JWT
+5. ⏳ Upload et stockage fichiers
 
 ### Phase 2 - Lecture (2 semaines)
 1. Lecteur PDF/images
@@ -518,7 +576,7 @@ public class ReadingProgress
 3. Compression images
 4. PWA support
 
-## 6. SÉCURITÉ
+## 7. SÉCURITÉ
 
 - Authentification JWT avec refresh tokens
 - Autorisation basée sur les rôles
@@ -529,7 +587,7 @@ public class ReadingProgress
 - Logs d'audit
 - Backup automatique
 
-## 7. CONFIGURATION DOCKER POUR NAS
+## 8. CONFIGURATION DOCKER POUR NAS
 
 ### Docker Compose
 ```yaml
@@ -630,7 +688,7 @@ volumes:
   kcc-profiles:
 ```
 
-## 8. SERVICES DE GESTION DE FICHIERS
+## 9. SERVICES DE GESTION DE FICHIERS
 
 ### Service de Scanner
 ```csharp
@@ -806,7 +864,7 @@ public class ScraperController : ControllerBase
 - `Série/Tome XX/001.jpg`
 - Détection automatique basée sur regex configurables
 
-## 9. DÉPLOIEMENT SUR NAS
+## 10. DÉPLOIEMENT SUR NAS
 
 ### Prérequis NAS
 - Docker et Docker Compose installés

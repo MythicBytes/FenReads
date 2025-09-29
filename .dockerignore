@@ -1,0 +1,74 @@
+## Ignore build artifacts and temporary files
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/.idea/
+
+## Ignore test results
+**/TestResults/
+**/*.trx
+**/coverage.*.xml
+**/coverage.*.json
+
+## Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Ignore package directories
+**/packages/
+**/node_modules/
+
+## Ignore database files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+## Ignore logs
+*.log
+**/logs/
+
+## Ignore OS specific files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+## Ignore environment files
+.env
+.env.local
+.env.*.local
+
+## Git files
+.git/
+.gitignore
+.gitattributes
+.gitflow
+
+## Documentation and misc
+*.md
+LICENSE
+docs/
+*.yml
+*.yaml
+!appsettings*.json
+
+## CI/CD
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
+
+## Docker files (except necessary ones)
+docker-compose*.yml
+Dockerfile.*
+!Dockerfile
+
+## Frontend build artifacts (if any)
+**/wwwroot/dist/
+**/wwwroot/lib/
+**/ClientApp/dist/
+**/ClientApp/node_modules/
