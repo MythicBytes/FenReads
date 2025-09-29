@@ -12,7 +12,7 @@ public class Page : BaseEntity
     public int Height { get; set; }
     public long FileSize { get; set; }
     public string? MimeType { get; set; }
-    
+
     // Navigation property
     public virtual Chapter Chapter { get; set; } = null!;
 }

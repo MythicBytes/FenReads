@@ -12,7 +12,7 @@ public class ReadingProgress : BaseEntity
     public DateTime LastReadAt { get; set; }
     public TimeSpan ReadingTime { get; set; }
     public bool IsCompleted { get; set; }
-    
+
     // Navigation properties
     public virtual User User { get; set; } = null!;
     public virtual Chapter Chapter { get; set; } = null!;

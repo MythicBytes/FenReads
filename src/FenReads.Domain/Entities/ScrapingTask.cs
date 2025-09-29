@@ -17,7 +17,7 @@ public class ScrapingTask : BaseEntity
     public string? ErrorMessage { get; set; }
     public string? ResultData { get; set; } // JSON data
     public Guid? WorkId { get; set; }
-    
+
     // Navigation property
     public virtual Work? Work { get; set; }
 }

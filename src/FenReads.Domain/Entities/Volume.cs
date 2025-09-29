@@ -11,7 +11,7 @@ public class Volume : BaseEntity
     public string? CoverImagePath { get; set; }
     public int SortOrder { get; set; }
     public DateTime? ReleaseDate { get; set; }
-    
+
     // Navigation properties
     public virtual Work Work { get; set; } = null!;
     public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();

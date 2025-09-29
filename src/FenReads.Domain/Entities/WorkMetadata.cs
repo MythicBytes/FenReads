@@ -18,7 +18,7 @@ public class WorkMetadata : BaseEntity
     public string? Twitter { get; set; }
     public DateTime? LastScrapedAt { get; set; }
     public string? ScrapingSource { get; set; }
-    
+
     // Navigation property
     public virtual Work Work { get; set; } = null!;
 }

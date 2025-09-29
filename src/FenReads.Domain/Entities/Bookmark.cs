@@ -11,7 +11,7 @@ public class Bookmark : BaseEntity
     public string? Title { get; set; }
     public string? Notes { get; set; }
     public string? Color { get; set; }
-    
+
     // Navigation properties
     public virtual User User { get; set; } = null!;
     public virtual Chapter Chapter { get; set; } = null!;

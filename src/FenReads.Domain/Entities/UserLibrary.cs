@@ -13,7 +13,7 @@ public class UserLibrary : BaseEntity
     public bool IsFavorite { get; set; }
     public DateTime? StartedReadingAt { get; set; }
     public DateTime? CompletedAt { get; set; }
-    
+
     // Navigation properties
     public virtual User User { get; set; } = null!;
     public virtual Work Work { get; set; } = null!;

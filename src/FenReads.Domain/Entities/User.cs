@@ -14,7 +14,7 @@ public class User : BaseEntity
     public DateTime? LastLoginAt { get; set; }
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiryTime { get; set; }
-    
+
     // Navigation properties
     public virtual ICollection<UserLibrary> Libraries { get; set; } = new List<UserLibrary>();
     public virtual ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();

@@ -13,7 +13,7 @@ public class Chapter : BaseEntity
     public DateTime? ReleaseDate { get; set; }
     public string? Language { get; set; }
     public string? TranslatorGroup { get; set; }
-    
+
     // Navigation properties
     public virtual Volume Volume { get; set; } = null!;
     public virtual ICollection<Page> Pages { get; set; } = new List<Page>();

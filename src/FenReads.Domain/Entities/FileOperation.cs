@@ -15,7 +15,7 @@ public class FileOperation : BaseEntity
     public Guid? WorkId { get; set; }
     public Guid? VolumeId { get; set; }
     public Guid? ChapterId { get; set; }
-    
+
     // Navigation properties
     public virtual Work? Work { get; set; }
     public virtual Volume? Volume { get; set; }

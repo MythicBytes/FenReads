@@ -19,7 +19,7 @@ public class Work : BaseEntity
     public bool IsAdult { get; set; }
     public string? ExternalId { get; set; }
     public string? ExternalSource { get; set; }
-    
+
     // Navigation properties
     public virtual ICollection<Volume> Volumes { get; set; } = new List<Volume>();
     public virtual ICollection<WorkTag> Tags { get; set; } = new List<WorkTag>();
