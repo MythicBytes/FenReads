@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: fenreads_test
+      POSTGRES_USER: fenreads
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fenreads -d fenreads_test"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis-test:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  fenreads-api:
+    build:
+      context: ../../
+      dockerfile: src/FenReads.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Testing
+      ConnectionStrings__DefaultConnection: "Host=postgres-test;Database=fenreads_test;Username=fenreads;Password=test_password"
+      ConnectionStrings__Redis: "redis-test:6379"
+    ports:
+      - "5001:80"
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+
+  karate-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KARATE_ENV: docker
+      API_BASE_URL: http://fenreads-api
+      KARATE_THREADS: ${KARATE_THREADS:-1}
+    volumes:
+      - ./reports:/tests/reports
+      - ./src/test/resources:/tests:ro
+    depends_on:
+      - fenreads-api
+    command: ["-o", "/tests/reports", "/tests/features"]
+
+networks:
+  default:
+    name: fenreads-test-network
