@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FenReads.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250929223434_InitialCreate")]
+    [Migration("20250930000241_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -130,12 +130,7 @@ namespace FenReads.Infrastructure.Migrations
                     b.Property<Guid>("VolumeId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("VolumeId1")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VolumeId1");
 
                     b.HasIndex("VolumeId", "ChapterNumber")
                         .IsUnique();
@@ -221,9 +216,6 @@ namespace FenReads.Infrastructure.Migrations
                     b.Property<Guid>("ChapterId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ChapterId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -262,8 +254,6 @@ namespace FenReads.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ChapterId1");
 
                     b.HasIndex("ChapterId", "PageNumber")
                         .IsUnique();
@@ -907,15 +897,9 @@ namespace FenReads.Infrastructure.Migrations
 
             modelBuilder.Entity("FenReads.Domain.Entities.Chapter", b =>
                 {
-                    b.HasOne("FenReads.Domain.Entities.Volume", null)
+                    b.HasOne("FenReads.Domain.Entities.Volume", "Volume")
                         .WithMany("Chapters")
                         .HasForeignKey("VolumeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FenReads.Domain.Entities.Volume", "Volume")
-                        .WithMany()
-                        .HasForeignKey("VolumeId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -945,15 +929,9 @@ namespace FenReads.Infrastructure.Migrations
 
             modelBuilder.Entity("FenReads.Domain.Entities.Page", b =>
                 {
-                    b.HasOne("FenReads.Domain.Entities.Chapter", null)
+                    b.HasOne("FenReads.Domain.Entities.Chapter", "Chapter")
                         .WithMany("Pages")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FenReads.Domain.Entities.Chapter", "Chapter")
-                        .WithMany()
-                        .HasForeignKey("ChapterId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

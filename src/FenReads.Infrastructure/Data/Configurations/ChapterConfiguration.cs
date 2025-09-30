@@ -36,7 +36,7 @@ public class ChapterConfiguration : IEntityTypeConfiguration<Chapter>
 
         // Relationships
         builder.HasMany(c => c.Pages)
-            .WithOne()
+            .WithOne(p => p.Chapter)
             .HasForeignKey(p => p.ChapterId)
             .OnDelete(DeleteBehavior.Cascade);
     }

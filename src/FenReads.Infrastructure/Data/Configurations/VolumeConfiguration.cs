@@ -35,7 +35,7 @@ public class VolumeConfiguration : IEntityTypeConfiguration<Volume>
 
         // Relationships
         builder.HasMany(v => v.Chapters)
-            .WithOne()
+            .WithOne(c => c.Volume)
             .HasForeignKey(c => c.VolumeId)
             .OnDelete(DeleteBehavior.Cascade);
     }

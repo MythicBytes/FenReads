@@ -25,6 +25,7 @@ public class ApplicationDbContextTests : IAsyncLifetime
 
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseNpgsql(_postgresContainer.GetConnectionString())
+            .AddInterceptors(new FenReads.Infrastructure.Data.Interceptors.AuditableEntityInterceptor())
             .Options;
 
         _context = new ApplicationDbContext(options);

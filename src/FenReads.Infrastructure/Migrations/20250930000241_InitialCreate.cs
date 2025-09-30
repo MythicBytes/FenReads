@@ -302,7 +302,6 @@ namespace FenReads.Infrastructure.Migrations
                     ReleaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     Language = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     TranslatorGroup = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    VolumeId1 = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -314,12 +313,6 @@ namespace FenReads.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Chapters_Volumes_VolumeId",
                         column: x => x.VolumeId,
-                        principalTable: "Volumes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Chapters_Volumes_VolumeId1",
-                        column: x => x.VolumeId1,
                         principalTable: "Volumes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -419,7 +412,6 @@ namespace FenReads.Infrastructure.Migrations
                     Height = table.Column<int>(type: "integer", nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
                     MimeType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ChapterId1 = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -431,12 +423,6 @@ namespace FenReads.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Pages_Chapters_ChapterId",
                         column: x => x.ChapterId,
-                        principalTable: "Chapters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Pages_Chapters_ChapterId1",
-                        column: x => x.ChapterId1,
                         principalTable: "Chapters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -506,11 +492,6 @@ namespace FenReads.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chapters_VolumeId1",
-                table: "Chapters",
-                column: "VolumeId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_FileOperations_ChapterId",
                 table: "FileOperations",
                 column: "ChapterId");
@@ -540,11 +521,6 @@ namespace FenReads.Infrastructure.Migrations
                 table: "Pages",
                 columns: new[] { "ChapterId", "PageNumber" },
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Pages_ChapterId1",
-                table: "Pages",
-                column: "ChapterId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReadingProgresses_ChapterId",
