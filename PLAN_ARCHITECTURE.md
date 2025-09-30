@@ -700,17 +700,29 @@ FenReads/
 - ✅ Pipeline CI/CD GitHub Actions configuré
 - ✅ Support Docker et Testcontainers
 - ✅ Git Flow configuré (main/develop + features)
-- ⏳ Modèles de domaine à créer
+- ✅ Modèles de domaine créés (14 entités)
+- ✅ Configuration EF Core complète
 - ⏳ Dockerfiles à configurer
+
+### Configuration EF Core
+- ✅ ApplicationDbContext avec 14 DbSets
+- ✅ AuditableEntityInterceptor (audit automatique)
+- ✅ 14 configurations Fluent API pour toutes les entités
+- ✅ Migration initiale générée (14 tables + index + contraintes)
+- ✅ DbSeeder avec admin user et 20 tags par défaut
+- ✅ Tests d'intégration avec Testcontainers
+- ✅ EF Core 9.0.9 + Npgsql configuré
 
 ## 6. PLAN DE DÉVELOPPEMENT
 
-### Phase 1 - Core (2-3 semaines) ✅ En cours
+### Phase 1 - Core (2-3 semaines) ⏳ En cours
 1. ✅ Setup projet et architecture
-2. ⏳ Modèles de données et migrations
-3. ⏳ API de base (CRUD manga/utilisateurs)
-4. ⏳ Authentification JWT
-5. ⏳ Upload et stockage fichiers
+2. ✅ Modèles de données et migrations
+3. ✅ Configuration EF Core et migrations initiales
+4. ⏳ Repositories et Unit of Work
+5. ⏳ API de base (CRUD œuvres/utilisateurs)
+6. ⏳ Authentification JWT
+7. ⏳ Upload et stockage fichiers
 
 ### Phase 2 - Lecture (2 semaines)
 1. Lecteur PDF/images
