@@ -127,13 +127,16 @@ public class ApplicationDbContextTests : IAsyncLifetime
         await _context.Tags.AddAsync(tag);
         await _context.SaveChangesAsync();
 
+        // Clear tracking to force reload from database
+        _context.ChangeTracker.Clear();
         var retrievedTag = await _context.Tags.FindAsync(tag.Id);
 
         // Assert
         retrievedTag.ShouldNotBeNull();
-        retrievedTag.CreatedAt.ShouldBeGreaterThan(DateTime.MinValue);
-        retrievedTag.UpdatedAt.ShouldBeGreaterThan(DateTime.MinValue);
+        retrievedTag.CreatedAt.ShouldNotBe(default(DateTime));
+        retrievedTag.UpdatedAt.ShouldNotBe(default(DateTime));
         retrievedTag.CreatedBy.ShouldBe("system");
+        retrievedTag.UpdatedBy.ShouldBe("system");
     }
 
     [Fact]
@@ -157,19 +160,26 @@ public class ApplicationDbContextTests : IAsyncLifetime
 
         var volume = new Volume
         {
-            WorkId = work.Id,
             VolumeNumber = "1",
             SortOrder = 1
         };
 
         var chapter = new Chapter
         {
-            VolumeId = volume.Id,
             ChapterNumber = "1",
             SortOrder = 1,
             PageCount = 50
         };
 
+        work.Volumes.Add(volume);
+        volume.Chapters.Add(chapter);
+
+        // Act
+        await _context.Users.AddAsync(user);
+        await _context.Works.AddAsync(work);
+        await _context.SaveChangesAsync();
+
+        // Now create the reading progress with the persisted chapter ID
         var progress = new ReadingProgress
         {
             UserId = user.Id,
@@ -181,12 +191,6 @@ public class ApplicationDbContextTests : IAsyncLifetime
             IsCompleted = false
         };
 
-        work.Volumes.Add(volume);
-        volume.Chapters.Add(chapter);
-
-        // Act
-        await _context.Users.AddAsync(user);
-        await _context.Works.AddAsync(work);
         await _context.ReadingProgresses.AddAsync(progress);
         await _context.SaveChangesAsync();
 
