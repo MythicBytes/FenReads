@@ -40,9 +40,14 @@ public class ReadingProgressConfiguration : IEntityTypeConfiguration<ReadingProg
             .IsUnique();
 
         // Relationships
-        builder.HasOne<Chapter>()
+        builder.HasOne(rp => rp.Chapter)
             .WithMany(c => c.ReadingProgress)
             .HasForeignKey(rp => rp.ChapterId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(rp => rp.User)
+            .WithMany(u => u.ReadingProgress)
+            .HasForeignKey(rp => rp.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

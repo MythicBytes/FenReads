@@ -267,9 +267,6 @@ namespace FenReads.Infrastructure.Migrations
                     b.Property<Guid>("ChapterId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ChapterId1")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -306,8 +303,6 @@ namespace FenReads.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ChapterId");
-
-                    b.HasIndex("ChapterId1");
 
                     b.HasIndex("UserId");
 
@@ -937,15 +932,9 @@ namespace FenReads.Infrastructure.Migrations
 
             modelBuilder.Entity("FenReads.Domain.Entities.ReadingProgress", b =>
                 {
-                    b.HasOne("FenReads.Domain.Entities.Chapter", null)
+                    b.HasOne("FenReads.Domain.Entities.Chapter", "Chapter")
                         .WithMany("ReadingProgress")
                         .HasForeignKey("ChapterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FenReads.Domain.Entities.Chapter", "Chapter")
-                        .WithMany()
-                        .HasForeignKey("ChapterId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

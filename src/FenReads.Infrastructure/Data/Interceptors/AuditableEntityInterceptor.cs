@@ -33,16 +33,20 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
 
         foreach (var entry in entries)
         {
+            var now = DateTime.UtcNow;
+
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedAt = DateTime.UtcNow;
+                entry.Entity.CreatedAt = now;
+                entry.Entity.UpdatedAt = now;
                 // TODO: Inject ICurrentUserService to get current user
                 entry.Entity.CreatedBy = "system";
+                entry.Entity.UpdatedBy = "system";
             }
 
             if (entry.State == EntityState.Modified)
             {
-                entry.Entity.UpdatedAt = DateTime.UtcNow;
+                entry.Entity.UpdatedAt = now;
                 // TODO: Inject ICurrentUserService to get current user
                 entry.Entity.UpdatedBy = "system";
             }

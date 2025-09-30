@@ -441,7 +441,6 @@ namespace FenReads.Infrastructure.Migrations
                     LastReadAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReadingTime = table.Column<TimeSpan>(type: "interval", nullable: false),
                     IsCompleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ChapterId1 = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -453,12 +452,6 @@ namespace FenReads.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_ReadingProgresses_Chapters_ChapterId",
                         column: x => x.ChapterId,
-                        principalTable: "Chapters",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ReadingProgresses_Chapters_ChapterId1",
-                        column: x => x.ChapterId1,
                         principalTable: "Chapters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -526,11 +519,6 @@ namespace FenReads.Infrastructure.Migrations
                 name: "IX_ReadingProgresses_ChapterId",
                 table: "ReadingProgresses",
                 column: "ChapterId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReadingProgresses_ChapterId1",
-                table: "ReadingProgresses",
-                column: "ChapterId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReadingProgresses_UserId",
